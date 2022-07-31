@@ -17,4 +17,6 @@ RUN apt-get update && apt-get install -y \
 	&& docker-php-ext-install -j$(nproc) mysqli \
     && rm -rf /var/lib/apt/lists/*
 
-CMD /usr/sbin/cron -f
+ADD entrypoint.sh /entrypoint.sh
+ENTRYPOINT ["/entrypoint.sh"]
+CMD ["/usr/sbin/cron","-f", "-l", "2"]
