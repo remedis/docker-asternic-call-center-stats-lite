@@ -19,6 +19,11 @@ RUN apt-get update && apt-get install -y \
 	&& docker-php-ext-install -j$(nproc) gd mysqli \
 	&& rm -rf /var/lib/apt/lists/*
 
+RUN a2enmod remoteip && \
+	echo 'RemoteIPHeader X-Real-IP' > /etc/apache2/conf-available/remoteip.conf && \
+	echo 'RemoteIPInternalProxy 172.0.0.0/8' >> /etc/apache2/conf-available/remoteip.conf && \
+	a2enconf remoteip
+
 EXPOSE 80
 HEALTHCHECK --interval=30s --timeout=3s \
   CMD curl -f http://localhost/ || exit 1
