@@ -7,4 +7,4 @@
 # |  |  |  |  |
 # *  *  *  *  * user-name command to be executed
 
-*/5 *	* * *	root	php -f /usr/local/bin/parselog.php convertlocal
+*/5 *	* * *	root	/usr/local/bin/php -f /usr/local/bin/parselog.php convertlocal
