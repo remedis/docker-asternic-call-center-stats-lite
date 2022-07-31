@@ -46,6 +46,7 @@ services:
     volumes:
       - ./config/parselog/config.php:/usr/local/bin/parselog/config.php:ro
       - ./config/parselog/crontab:/etc/crontab:ro
+      - /var/log/asterisk:/var/log/asterisk:ro
     tty: true
     depends_on:
       - database
