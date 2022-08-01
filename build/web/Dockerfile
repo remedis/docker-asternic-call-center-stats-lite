@@ -8,6 +8,7 @@ RUN mkdir /app && \
 
 FROM php:7.4-apache-bullseye
 LABEL author="Krzysztof Hajdamowicz"
+LABEL org.opencontainers.image.source https://github.com/remedis/docker-asternic-call-center-stats-lite
 
 COPY --from=builder /app/html /var/www/html
 
