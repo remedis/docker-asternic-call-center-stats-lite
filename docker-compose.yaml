@@ -33,20 +33,29 @@ services:
       MYSQL_USER: ${dbuser}
       MYSQL_PASSWORD: ${dbpass}
   
+  # Go daemon that follows queue_log continuously (replaces the PHP
+  # parselog run from cron). Source: parselogd/ in
+  # https://github.com/KrzysztofHajdamowicz/asternic-stats-lite
+  # The old PHP image can still be built from build/parselog.
   parselog:
-    init: true
+    image: ghcr.io/krzysztofhajdamowicz/asternic-parselogd:latest
     restart: always
-    build:
-      context: build/parselog
-      dockerfile: Dockerfile
     links:
       - database
     env_file:
       - .env
+    environment:
+      CONVERT_LOCAL: "true"
     volumes:
-      - ./config/parselog/config.php:/usr/local/bin/parselog/config.php:ro
-      - ./config/parselog/crontab:/etc/crontab:ro
+      # Mount the directory, not the file, so log rotation is visible.
       - /var/log/asterisk:/var/log/asterisk:ro
-    tty: true
+    # Root without any capability except reading files regardless of their
+    # permissions, so a queue_log owned by asterisk with mode 0640 is readable.
+    user: "0:0"
+    cap_drop:
+      - ALL
+    cap_add:
+      - DAC_READ_SEARCH
+    read_only: true
     depends_on:
       - database
