@@ -26,10 +26,11 @@ RUN apt-get update && apt-get install -y \
 # Production defaults: errors go to the log (docker logs), not into the HTML.
 RUN mv "$PHP_INI_DIR/php.ini-production" "$PHP_INI_DIR/php.ini"
 
-RUN a2enmod remoteip && \
-	echo 'RemoteIPHeader X-Real-IP' > /etc/apache2/conf-available/remoteip.conf && \
-	echo 'RemoteIPInternalProxy 172.0.0.0/8' >> /etc/apache2/conf-available/remoteip.conf && \
-	a2enconf remoteip
+# Real client IP behind Cloudflare (cloudflared tunnel on the compose network):
+# mod_remoteip rewrites the client address (REMOTE_ADDR in PHP) and the
+# access log uses %a instead of %h. See remoteip.conf for details.
+COPY remoteip.conf /etc/apache2/conf-available/remoteip.conf
+RUN a2enmod remoteip && a2enconf remoteip
 
 EXPOSE 80
 HEALTHCHECK --interval=30s --timeout=3s \
